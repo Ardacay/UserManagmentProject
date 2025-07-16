@@ -1,3 +1,55 @@
-﻿@{
-    ViewData["Title"] = "giveRole Page";
+﻿@using Microsoft.AspNetCore.Identity
+
+@model List<IdentityUser>
+@{
+	var userRoles = ViewBag.UserRoles as Dictionary<string, string>;
+	var roles = new List<string> { "Admin", "Manager", "Member" };
 }
+
+<table class="table">
+	<thead>
+		<tr>
+			<th>Kullanıcı Adı</th>
+			<th>Email</th>
+			<th>Rol</th>
+			<th>Rol Değiştir</th>
+		</tr>
+	</thead>
+	<tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.UserName</td>
+                <td>@user.Email</td>
+                <td>@userRoles[user.Id]</td>
+                <td>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <form asp-action="ChangeRole" method="post">
+                            <input type="hidden" name="userId" value="@user.Id" />
+                            <select name="newRole" class="form-select" style="width:auto; display:inline-block;">
+                                @foreach (var role in roles)
+                                {
+                                    if (userRoles[user.Id] == role)
+                                    {
+                                        <option value="@role" selected="selected">@role</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@role">@role</option>
+                                    }
+                                }
+                            </select>
+                            <button type="submit" class="btn btn-primary btn-sm">Değiştir</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <span class="text-muted">Sadece görüntüleme</span>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
