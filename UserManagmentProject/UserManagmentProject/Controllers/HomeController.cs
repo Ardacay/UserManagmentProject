@@ -40,24 +40,48 @@ namespace UserManagmentProject.Controllers
             return View();
         }
 
+        //public async Task<IActionResult> GiveRole()
+        //{
+        //    var repoUsers = _userRepository.GetAll().ToList();
+        //    var users = _userManager.Users.ToList();
+
+        //    var userRoles = new Dictionary<string, string>();
+
+        //    foreach (var user in users)
+        //    {
+        //        var repoRoles = _roleUserRepository.Get(x => x.UserId == user.Id);
+        //        var roles = await _userManager.GetRolesAsync(user); 
+        //        userRoles[user.Id] = roles.FirstOrDefault() ?? "UNKNOWN"; 
+
+        //    }
+
+        //    ViewBag.UserRoles = userRoles;
+        //    return View(users);
+        //}
+        private async Task<Dictionary<string, string>> GetUserRolesAsync(List<IdentityUser> users)
+        {
+            var userRoles = new Dictionary<string, string>();
+
+            foreach (var user in users)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+                userRoles[user.Id] = roles.FirstOrDefault() ?? "UNKNOWN";
+            }
+
+            return userRoles;
+        }
+        [Authorize(Roles ="Admin, Manager")]
         public async Task<IActionResult> GiveRole()
         {
             var repoUsers = _userRepository.GetAll().ToList();
             var users = _userManager.Users.ToList();
 
-            var userRoles = new Dictionary<string, string>();
-
-            foreach (var user in users)
-            {
-                var repoRoles = _roleUserRepository.Get(x => x.UserId == user.Id);
-                var roles = await _userManager.GetRolesAsync(user); 
-                userRoles[user.Id] = roles.FirstOrDefault() ?? "UNKNOWN"; 
-
-            }
+            var userRoles = await GetUserRolesAsync(users);
 
             ViewBag.UserRoles = userRoles;
             return View(users);
         }
+
 
         public async Task<IActionResult> EditRoles(string userId)
         {

@@ -23,7 +23,7 @@
                 <td>@user.Email</td>
                 <td>@userRoles[user.Id]</td>
                 <td>
-                    @if (User.IsInRole("Admin"))
+                    @if (User.IsInRole("Manager"))
                     {
                         <form asp-action="ChangeRole" method="post">
                             <input type="hidden" name="userId" value="@user.Id" />
